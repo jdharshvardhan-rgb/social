@@ -361,7 +361,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                                 notifyItemChanged(adapterPosition, "reactions");
                                 like(p, adapterPosition, 0);
                             }
-                            if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
+                            if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
                             return true;
                         }
 
@@ -960,7 +960,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                                         notifyItemChanged(adapterPosition, "reactions");
                                         like(p, adapterPosition, 0);
                                     }
-                                    if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
+                                    if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
                                     return true;
                                 }
 
@@ -1544,7 +1544,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                             notifyItemChanged(position, "reactions");
                             like(p, position, 0);
                         }
-                        if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
+                        if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
                         return true;
                     }
                 });
@@ -1616,7 +1616,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                     notifyItemChanged(position, "reactions");
                     like(p, position, 0);
                 }
-                if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
+                if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
                 return true;
             }
         });
