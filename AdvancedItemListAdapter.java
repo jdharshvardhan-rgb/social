@@ -361,7 +361,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                                 notifyItemChanged(adapterPosition, "reactions");
                                 like(p, adapterPosition, 0);
                             }
-                            showHeartAnimation(holder.mHeartOverlay);
+                            if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
                             return true;
                         }
 
@@ -558,6 +558,8 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView mHeartOverlay;
+
+        public ImageView mVideoHeartOverlay;
         public CircularImageView mItemAuthorPhoto, mItemAuthorIcon, mItemFeelingIcon;
         public TextView mItemAuthor, mItemFeelingTitle;
         public ImageView mItemAuthorOnlineIcon, mItemPlayVideo;
@@ -689,6 +691,8 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                 mItemPlayVideo = (ImageView) v.findViewById(R.id.video_play_image);
                 mHeartOverlay = (ImageView) v.findViewById(R.id.heart_overlay);
 
+
+                mVideoHeartOverlay = (ImageView) v.findViewById(R.id.video_heart_overlay); // NEW
                 mImageProgressBar = (ProgressBar) v.findViewById(R.id.image_progress_bar);
                 mVideoProgressBar = (ProgressBar) v.findViewById(R.id.video_progress_bar);
 
@@ -956,7 +960,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                                         notifyItemChanged(adapterPosition, "reactions");
                                         like(p, adapterPosition, 0);
                                     }
-                                    showHeartAnimation(holder.mHeartOverlay);
+                                    if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
                                     return true;
                                 }
 
@@ -1540,7 +1544,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                             notifyItemChanged(position, "reactions");
                             like(p, position, 0);
                         }
-                        showHeartAnimation(holder.mHeartOverlay);
+                        if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
                         return true;
                     }
                 });
@@ -1612,7 +1616,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                     notifyItemChanged(position, "reactions");
                     like(p, position, 0);
                 }
-                showHeartAnimation(holder.mHeartOverlay);
+                if (holder.mVideoHeartOverlay != null) showHeartAnimation(holder.mVideoHeartOverlay);
                 return true;
             }
         });
@@ -2610,21 +2614,51 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
     }
 
     private void showHeartAnimation(final ImageView heartOverlay) {
-        heartOverlay.setVisibility(View.VISIBLE);
-        heartOverlay.setScaleX(0.1f);
-        heartOverlay.setScaleY(0.1f);
-        heartOverlay.setAlpha(1f);
-        heartOverlay.animate()
-                .scaleX(1.5f)
-                .scaleY(1.5f)
-                .setDuration(200)
-                .withEndAction(() -> heartOverlay.animate()
-                        .alpha(0f)
-                        .setDuration(300)
-                        .withEndAction(() -> heartOverlay.setVisibility(View.GONE))
-                        .start())
-                .start();
+        if (heartOverlay == null) return;
+
+        // Ensure we run on the UI thread and that the overlay is moved to front before animating.
+        heartOverlay.post(() -> {
+            try {
+                // Bring the overlay itself to front (don't touch the parent; that previously caused ordering issues)
+                try {
+                    heartOverlay.bringToFront();
+                } catch (Throwable ignore) {}
+
+                // For Lollipop+ ensure elevation/z is higher so it sits top-most
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    try {
+                        heartOverlay.setZ(100f);
+                    } catch (Throwable ignoreZ) { }
+                }
+
+                heartOverlay.setVisibility(View.VISIBLE);
+                heartOverlay.setScaleX(0.1f);
+                heartOverlay.setScaleY(0.1f);
+                heartOverlay.setAlpha(1f);
+                heartOverlay.animate()
+                        .scaleX(1.5f)
+                        .scaleY(1.5f)
+                        .setDuration(200)
+                        .withEndAction(() -> heartOverlay.animate()
+                                .alpha(0f)
+                                .setDuration(300)
+                                .withEndAction(() -> heartOverlay.setVisibility(View.GONE))
+                                .start())
+                        .start();
+            } catch (Throwable t) {
+                // Best-effort fallback: simply fade the heart and hide it
+                try {
+                    heartOverlay.setVisibility(View.VISIBLE);
+                    heartOverlay.animate()
+                            .alpha(0f)
+                            .setDuration(300)
+                            .withEndAction(() -> heartOverlay.setVisibility(View.GONE))
+                            .start();
+                } catch (Throwable ignored) {}
+            }
+        });
     }
+
 
     private void like(final Item p, final int position, final int reaction) {
 
