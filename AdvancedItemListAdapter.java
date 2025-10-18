@@ -269,7 +269,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
             holder.playerView.setVisibility(View.VISIBLE);
             holder.btnMute.setVisibility(View.VISIBLE);
             holder.mVideoProgressBar.setVisibility(View.GONE);
-            holder.mVideoImg.setVisibility(View.GONE);
+            holder.mVideoImg.setVisibility(View.VISIBLE);
             holder.mItemPlayVideo.setVisibility(View.GONE);
             return;
         }
@@ -421,7 +421,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
         holder.playerView.setVisibility(View.VISIBLE);
         holder.btnMute.setVisibility(View.VISIBLE);
         holder.mVideoProgressBar.setVisibility(View.VISIBLE);
-        holder.mVideoImg.setVisibility(View.GONE);
+        holder.mVideoImg.setVisibility(View.VISIBLE);
         holder.mItemPlayVideo.setVisibility(View.GONE);
 
         com.google.android.exoplayer2.MediaItem mediaItem =
@@ -1010,7 +1010,7 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                     }
                 });
 
-                holder.mVideoImg.setVisibility(View.GONE);
+                holder.mVideoImg.setVisibility(View.VISIBLE);
                 holder.mItemPlayVideo.setVisibility(View.GONE);
 
                 exoPlayer.addListener(new com.google.android.exoplayer2.Player.Listener() {
