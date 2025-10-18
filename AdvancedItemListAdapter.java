@@ -355,14 +355,19 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
 
                         @Override
                         public boolean onDoubleTap(MotionEvent e) {
+                            // always animate video heart overlay
+                            if (holder.mVideoHeartOverlay != null) {
+                                showHeartAnimation(holder.mVideoHeartOverlay);
+                            }
+
                             if (App.getInstance().getId() != 0 && !p.isMyLike()) {
                                 p.setMyLike(true);
                                 p.setLikesCount(p.getLikesCount() + 1);
-                                notifyItemChanged(adapterPosition, "reactions");
+
                                 like(p, adapterPosition, 0);
-                            }
-                            if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
-                            return true;
+
+                                new Handler().postDelayed(() -> notifyItemChanged(adapterPosition, "reactions"), 350);
+                            }return true;
                         }
 
                         @Override
@@ -437,15 +442,15 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
         }
 
         sharedPlayer.setVolume(autoMuted ? 0f : 1f);
-        holder.btnMute.setImageResource(autoMuted ? R.drawable.btn_unmute : R.drawable.btn_mute);
+        holder.btnMute.setImageResource(autoMuted ? R.drawable.btn_mute : R.drawable.btn_unmute);
         holder.btnMute.setOnClickListener(v -> {
             try {
                 if (sharedPlayer.getVolume() == 0f) {
                     sharedPlayer.setVolume(1f);
-                    holder.btnMute.setImageResource(R.drawable.btn_mute);
+                    holder.btnMute.setImageResource(R.drawable.btn_unmute);
                 } else {
                     sharedPlayer.setVolume(0f);
-                    holder.btnMute.setImageResource(R.drawable.btn_unmute);
+                    holder.btnMute.setImageResource(R.drawable.btn_mute);
                 }
             } catch (Throwable ignore) {}
         });
@@ -954,14 +959,19 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
 
                                 @Override
                                 public boolean onDoubleTap(MotionEvent e) {
+                                    // show video heart overlay for this holder
+                                    if (holder.mVideoHeartOverlay != null) {
+                                        showHeartAnimation(holder.mVideoHeartOverlay);
+                                    }
+
                                     if (App.getInstance().getId() != 0 && !p.isMyLike()) {
                                         p.setMyLike(true);
                                         p.setLikesCount(p.getLikesCount() + 1);
-                                        notifyItemChanged(adapterPosition, "reactions");
+
                                         like(p, adapterPosition, 0);
-                                    }
-                                    if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
-                                    return true;
+
+                                        new Handler().postDelayed(() -> notifyItemChanged(adapterPosition, "reactions"), 350);
+                                    }return true;
                                 }
 
                                 @Override
@@ -989,14 +999,14 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                 exoPlayer.setPlayWhenReady(true);
 
                 exoPlayer.setVolume(0f); // default mute
-                holder.btnMute.setImageResource(R.drawable.btn_unmute);
+                holder.btnMute.setImageResource(R.drawable.btn_mute);
                 holder.btnMute.setOnClickListener(muteBtn -> {
                     if (exoPlayer.getVolume() == 0f) {
                         exoPlayer.setVolume(1f);
-                        holder.btnMute.setImageResource(R.drawable.btn_mute);
+                        holder.btnMute.setImageResource(R.drawable.btn_unmute);
                     } else {
                         exoPlayer.setVolume(0f);
-                        holder.btnMute.setImageResource(R.drawable.btn_unmute);
+                        holder.btnMute.setImageResource(R.drawable.btn_mute);
                     }
                 });
 
@@ -1538,14 +1548,20 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
                     }
                     @Override
                     public boolean onDoubleTap(MotionEvent e) {
+                        // Always show video heart
+                        if (holder.mVideoHeartOverlay != null) {
+                            showHeartAnimation(holder.mVideoHeartOverlay);
+                        }
+
+                        // Update like if needed
                         if (App.getInstance().getId() != 0 && !p.isMyLike()) {
                             p.setMyLike(true);
                             p.setLikesCount(p.getLikesCount() + 1);
-                            notifyItemChanged(position, "reactions");
+
                             like(p, position, 0);
-                        }
-                        if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
-                        return true;
+
+                            new Handler().postDelayed(() -> notifyItemChanged(position, "reactions"), 350);
+                        }return true;
                     }
                 });
                 holder.mVideoImg.setOnTouchListener((v, event) -> {
@@ -1609,15 +1625,22 @@ public class AdvancedItemListAdapter extends RecyclerView.Adapter<AdvancedItemLi
             }
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                // Like and show heart
+                // Always show heart animation
+                if (holder.mHeartOverlay != null) {
+                    showHeartAnimation(holder.mHeartOverlay);
+                }
+
+                // Update state & call like() only if not liked yet
                 if (App.getInstance().getId() != 0 && !p.isMyLike()) {
                     p.setMyLike(true);
                     p.setLikesCount(p.getLikesCount() + 1);
-                    notifyItemChanged(position, "reactions");
+
+                    // Fire network call
                     like(p, position, 0);
-                }
-                if (holder.mHeartOverlay != null) showHeartAnimation(holder.mHeartOverlay);
-                return true;
+
+                    // Delay UI rebind so animation isn't interrupted
+                    new Handler().postDelayed(() -> notifyItemChanged(position, "reactions"), 350);
+                }return true;
             }
         });
         holder.mItemImg.setOnTouchListener((v, event) -> {
